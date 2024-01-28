@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using User_Administration_Api.Models;
+﻿using User_Administration_Api.Models;
+using User_Administration_Api.Models.DTO;
 
 namespace User_Administration_Api.Repository.Interfaces
 {
     public interface IRepositoryUser
     {
-        Task<IEnumerable<UsersModel>> FindAll();
-        Task<UsersModel> FindById(int id);
-        Task<UsersModel> FindByName(string name);
-        Task<UsersModel> FindByEmail(string email);
-        Task<UsersModel?> CreateNewUser(UsersModel user);
-        bool UpdateUser(UsersModel user);
-        bool DeleteUser(int id);
+        Task<IEnumerable<UserModelDTO>> FindAll();
+        Task<UserModelDTO> FindById(int id);
+        Task<UserModelDTO> FindByName(string name);
+        Task<UserModelDTO> FindByEmail(string email);
+        Task<bool> CreateNewUser(UsersModel user);
+        Task<bool> UpdateUser(UsersModel user);
+        Task<bool> DeleteUser(int id);
 
     }
 }

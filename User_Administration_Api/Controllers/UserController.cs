@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using User_Administration_Api.Models;
+using User_Administration_Api.Models.DTO;
 using User_Administration_Api.Repository.Interfaces;
 
 namespace User_Administration_Api.Controllers
@@ -94,23 +95,21 @@ namespace User_Administration_Api.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> PostNewUser(UsersModel user)
+        public async Task<IActionResult> PostNewUser([FromBody] UsersModel user)
         {
-
             try
             {
-                var retorno = await _repository.CreateNewUser(user);
+                var userCreated = await _repository.CreateNewUser(user);
 
-                if (retorno == null)
+                if (!userCreated)
                     return BadRequest();
 
-                return Ok(retorno);
+                return Ok(new UserModelDTO(user.Name, user.Email, user.Nickname, user.DateBirth));
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-
     }
 }
