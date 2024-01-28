@@ -9,9 +9,9 @@ namespace User_Administration_Api.Repository.Interfaces
         Task<UsersModel> FindById(int id);
         Task<UsersModel> FindByName(string name);
         Task<UsersModel> FindByEmail(string email);
-        Task<IActionResult> CreateNewUser(UsersModel user);
-        Task<IActionResult> UpdateUser(UsersModel user);
-        Task<IActionResult> DeleteUser(int id);
+        Task<UsersModel?> CreateNewUser(UsersModel user);
+        bool UpdateUser(UsersModel user);
+        bool DeleteUser(int id);
 
     }
 }

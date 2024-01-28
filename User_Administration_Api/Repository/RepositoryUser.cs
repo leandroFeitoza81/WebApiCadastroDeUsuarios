@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using User_Administration_Api.Models;
 using User_Administration_Api.Repository.Interfaces;
@@ -10,27 +11,16 @@ namespace User_Administration_Api.Repository
         private readonly string _connectionString = configuration.GetConnectionString("UsersDataBase")
             ?? throw new InvalidOperationException("ConnectionString 'UserDataBase' not found!");
 
-        public Task<IActionResult> CreateNewUser(UsersModel user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IActionResult> DeleteUser(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<UsersModel>> FindAll()
         {
             var users = new List<UsersModel>();
             await using var connection = new SqlConnection(_connectionString);
 
-            connection.Open();
-
             string sql = "SELECT * FROM Tb_User";
 
             var cmd = new SqlCommand(sql, connection);
 
+            connection.Open();
             SqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read())
@@ -55,7 +45,6 @@ namespace User_Administration_Api.Repository
             cmd.Parameters.AddWithValue("@email", email);
 
             connection.Open();
-            
             SqlDataReader reader = cmd.ExecuteReader();
             UsersModel user = new();
             while (reader.Read())
@@ -80,7 +69,6 @@ namespace User_Administration_Api.Repository
             cmd.Parameters.AddWithValue("@id", id);
 
             connection.Open();
-
             SqlDataReader reader = cmd.ExecuteReader();
             UsersModel user = new();
             while (reader.Read())
@@ -105,7 +93,6 @@ namespace User_Administration_Api.Repository
             cmd.Parameters.AddWithValue("@name", name);
 
             connection.Open();
-
             SqlDataReader reader = cmd.ExecuteReader();
             UsersModel user = new();
             while (reader.Read())
@@ -121,7 +108,36 @@ namespace User_Administration_Api.Repository
             return user;
         }
 
-        public Task<IActionResult> UpdateUser(UsersModel user)
+        async Task<UsersModel?> IRepositoryUser.CreateNewUser(UsersModel user)
+        {
+            await using var connection = new SqlConnection(_connectionString);
+
+            string sql = "INSERT INTO Tb_User (" +
+                "Name, Email, NickName, Password, DateBirth ) " +
+                "VALUES (" +
+                "@name, @email, @nickName, @password, @dateBirth)";
+
+            var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.AddWithValue("@name", user.Name);
+            cmd.Parameters.AddWithValue("@email", user.Email);
+            cmd.Parameters.AddWithValue("@nickName", user.Nickname);
+            cmd.Parameters.AddWithValue("@password", user.Password);
+            cmd.Parameters.AddWithValue("@dateBirth", user.DateBirth);
+
+            var rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected > 0)
+                return user;
+
+            return null;
+        }
+
+        bool IRepositoryUser.DeleteUser(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IRepositoryUser.UpdateUser(UsersModel user)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using User_Administration_Api.Models;
 using User_Administration_Api.Repository.Interfaces;
 
 namespace User_Administration_Api.Controllers
@@ -14,14 +15,6 @@ namespace User_Administration_Api.Controllers
         {
             _repository = repository;
         }
-
-        //[HttpPost]
-        //[Route("Add")]
-        //public async Task<UsersModel> CreateNewUser(UsersModel user)
-        //{
-
-        //    return new UsersModel();
-        //}
 
         [HttpGet]
         [Route("findAll")]
@@ -90,6 +83,26 @@ namespace User_Administration_Api.Controllers
 
                 if (retorno == null)
                     return NotFound($"Usuário não encontrado na base com o id: {name}");
+
+                return Ok(retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("add")]
+        public async Task<IActionResult> PostNewUser(UsersModel user)
+        {
+
+            try
+            {
+                var retorno = await _repository.CreateNewUser(user);
+
+                if (retorno == null)
+                    return BadRequest();
 
                 return Ok(retorno);
             }

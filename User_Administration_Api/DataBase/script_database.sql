@@ -38,3 +38,7 @@ GO
 
 
 select * from [Tb_User]
+
+declare @name varchar(100); set @name = 'mick'
+
+select * from [Tb_User] where Name like '%'+@name+'%'
