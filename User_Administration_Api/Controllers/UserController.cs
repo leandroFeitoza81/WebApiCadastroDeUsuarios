@@ -25,7 +25,7 @@ namespace User_Administration_Api.Controllers
 
         [HttpGet]
         [Route("findAll")]
-        public async Task<IActionResult> TestaConexao()
+        public async Task<IActionResult> GetAllUsers()
         {
             try
             {
@@ -33,6 +33,63 @@ namespace User_Administration_Api.Controllers
 
                 if (retorno == null)
                     return NotFound(new { data = "Dados não encontrados." });
+
+                return Ok(retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("findByEmail")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            try
+            {
+                var retorno = await _repository.FindByEmail(email);
+
+                if (retorno == null)
+                    return NotFound($"Usuário não encontrado na base com o email: {email}");
+
+                return Ok(retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("findById")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            try
+            {
+                var retorno = await _repository.FindById(id);
+
+                if (retorno == null)
+                    return NotFound($"Usuário não encontrado na base com o id: {id}");
+
+                return Ok(retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("findByName")]
+        public async Task<IActionResult> GetUserByName(string name)
+        {
+            try
+            {
+                var retorno = await _repository.FindByName(name);
+
+                if (retorno == null)
+                    return NotFound($"Usuário não encontrado na base com o id: {name}");
 
                 return Ok(retorno);
             }

@@ -27,7 +27,7 @@ namespace User_Administration_Api.Repository
 
             connection.Open();
 
-            string sql = "SELECT * FROM Tb_Users";
+            string sql = "SELECT * FROM Tb_User";
 
             var cmd = new SqlCommand(sql, connection);
 
@@ -46,19 +46,79 @@ namespace User_Administration_Api.Repository
             return users;
         }
 
-        public Task<UsersModel> FindByEmail(string email)
+        public async Task<UsersModel> FindByEmail(string email)
         {
-            throw new NotImplementedException();
+            await using var connection = new SqlConnection(_connectionString);
+            string sql = "SELECT * FROM Tb_User WHERE Email = @email";
+
+            var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.AddWithValue("@email", email);
+
+            connection.Open();
+            
+            SqlDataReader reader = cmd.ExecuteReader();
+            UsersModel user = new();
+            while (reader.Read())
+            {
+                user = new UsersModel(
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            reader.GetString(4),
+                            reader.GetDateTime(5));
+            }
+
+            return user;
         }
 
-        public Task<UsersModel> FindById(int id)
+        public async Task<UsersModel> FindById(int id)
         {
-            throw new NotImplementedException();
+            await using var connection = new SqlConnection(_connectionString);
+            string sql = "SELECT * FROM Tb_User WHERE Id = @id";
+
+            var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            connection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+            UsersModel user = new();
+            while (reader.Read())
+            {
+                user = new UsersModel(
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            reader.GetString(4),
+                            reader.GetDateTime(5));
+            }
+
+            return user;
         }
 
-        public Task<UsersModel> FindByName(string name)
+        public async Task<UsersModel> FindByName(string name)
         {
-            throw new NotImplementedException();
+            await using var connection = new SqlConnection(_connectionString);
+            string sql = "SELECT * FROM Tb_User WHERE Name like '%'+@name+'%'";
+
+            var cmd = new SqlCommand(sql, connection);
+            cmd.Parameters.AddWithValue("@name", name);
+
+            connection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+            UsersModel user = new();
+            while (reader.Read())
+            {
+                user = new UsersModel(
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            reader.GetString(4),
+                            reader.GetDateTime(5));
+            }
+
+            return user;
         }
 
         public Task<IActionResult> UpdateUser(UsersModel user)
