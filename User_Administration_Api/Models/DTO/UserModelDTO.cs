@@ -1,10 +1,33 @@
-﻿namespace User_Administration_Api.Models.DTO
+﻿using System.Text.Json.Serialization;
+
+namespace User_Administration_Api.Models.DTO
 {
-    public class UserModelDTO(string name, string email, string nickName, DateTime dateBirth)
+    public class UserModelDto
     {
-        public string Name { get; private set; } = name;
-        public string Email { get; private set; } = email;
-        public string NickName { get; private set; } = nickName;
-        public DateTime DateBirth { get; private set; } = dateBirth;
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+        public string Email { get; private set; }
+        public string NickName { get; private set; }
+        public DateTime DateBirth { get; private set; }
+
+        [JsonConstructor]
+        public UserModelDto(int id, string name, string email, string nickName, DateTime dateBirth)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
+            NickName = nickName;
+            DateBirth = dateBirth;
+        }
+
+        public UserModelDto(string name, string email, string nickName, DateTime dateBirth)
+        {
+            Name = name;
+            Email = email;
+            NickName = nickName;
+            DateBirth = dateBirth;
+        }
     }
+
+   
 }
