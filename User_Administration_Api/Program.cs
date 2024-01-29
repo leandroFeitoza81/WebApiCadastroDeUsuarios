@@ -16,7 +16,16 @@ namespace User_Administration_Api
 
             builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             // Configure the HTTP request pipeline.
 

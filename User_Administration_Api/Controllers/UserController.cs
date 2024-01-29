@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using User_Administration_Api.Models;
+using User_Administration_Api.Models.DTO;
 using User_Administration_Api.Repository.Interfaces;
 
 namespace User_Administration_Api.Controllers
@@ -14,15 +16,7 @@ namespace User_Administration_Api.Controllers
         {
             _repository = repository;
         }
-
-        //[HttpPost]
-        //[Route("Add")]
-        //public async Task<UsersModel> CreateNewUser(UsersModel user)
-        //{
-
-        //    return new UsersModel();
-        //}
-
+        
         [HttpGet]
         [Route("findAll")]
         public async Task<IActionResult> GetAllUsers()
@@ -99,5 +93,64 @@ namespace User_Administration_Api.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("add")]
+        public async Task<IActionResult> PostNewUser([FromBody] UserModel user)
+        {
+            try
+            {
+                var userCreated = await _repository.CreateNewUser(user);
+
+                if (!userCreated)
+                    return BadRequest();
+
+                return Created();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> UpdateUser(UserModelDto user)
+        {
+            try
+            {
+                var searchUser = await _repository.FindById(user.Id);
+                if (searchUser == null)
+                    return BadRequest("Usuário não encontrado na base.");
+
+                var userUpdated = await _repository.UpdateUser(user);
+
+                if (!userUpdated)
+                    return BadRequest();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var userDeleted = await _repository.DeleteUser(id);
+
+                if (!userDeleted)
+                    return BadRequest();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
