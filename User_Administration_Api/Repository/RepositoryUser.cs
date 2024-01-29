@@ -11,7 +11,7 @@ namespace User_Administration_Api.Repository
         private readonly string _connectionString = configuration.GetConnectionString("UsersDataBase")
             ?? throw new InvalidOperationException("ConnectionString 'UserDataBase' not found!");
 
-        public async Task<bool> CreateNewUser(UsersModel user)
+        public async Task<bool> CreateNewUser(UserModel user)
         {
             await using var connection = new SqlConnection(_connectionString);
 
@@ -33,14 +33,24 @@ namespace User_Administration_Api.Repository
             return rowsAffected > 0;
         }
 
-        public Task<bool> DeleteUser(int id)
+        public async Task<bool> DeleteUser(int id)
         {
-            throw new NotImplementedException();
+            await using var connection = new SqlConnection(_connectionString);
+            string sql = "DELETE FROM Tb_User WHERE Id = @id";
+
+            var cmd = new SqlCommand(sql, connection);
+
+            connection.Open();
+            cmd.Parameters.AddWithValue("@id", id);
+            var rowsAffected = cmd.ExecuteNonQuery();
+
+            return rowsAffected > 0;
+
         }
 
-        public async Task<IEnumerable<UserModelDTO>> FindAll()
+        public async Task<IEnumerable<UserModelDto>> FindAll()
         {
-            var users = new List<UserModelDTO>();
+            var users = new List<UserModelDto>();
             await using var connection = new SqlConnection(_connectionString);
 
             string sql = "SELECT * FROM Tb_User";
@@ -52,7 +62,8 @@ namespace User_Administration_Api.Repository
 
             while (reader.Read())
             {
-                users.Add(new UserModelDTO(
+                users.Add(new UserModelDto(
+                            reader.GetInt32(0),
                             reader.GetString(1),
                             reader.GetString(2),
                             reader.GetString(3),
@@ -62,7 +73,7 @@ namespace User_Administration_Api.Repository
             return users;
         }
 
-        public async Task<UserModelDTO> FindByEmail(string email)
+        public async Task<UserModelDto> FindByEmail(string email)
         {
             await using var connection = new SqlConnection(_connectionString);
             string sql = "SELECT * FROM Tb_User WHERE Email = @email";
@@ -72,10 +83,11 @@ namespace User_Administration_Api.Repository
 
             connection.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-            UserModelDTO user = null;
+            UserModelDto user = null;
             while (reader.Read())
             {
-                user = new UserModelDTO(
+                user = new UserModelDto(
+                            reader.GetInt32(0),
                             reader.GetString(1),
                             reader.GetString(2),
                             reader.GetString(3),
@@ -85,7 +97,7 @@ namespace User_Administration_Api.Repository
             return user;
         }
 
-        public async Task<UserModelDTO> FindById(int id)
+        public async Task<UserModelDto> FindById(int id)
         {
             await using var connection = new SqlConnection(_connectionString);
             string sql = "SELECT * FROM Tb_User WHERE Id = @id";
@@ -95,10 +107,11 @@ namespace User_Administration_Api.Repository
 
             connection.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-            UserModelDTO user = null;
+            UserModelDto user = null;
             while (reader.Read())
             {
-                user = new UserModelDTO(
+                user = new UserModelDto(
+                            reader.GetInt32(0),
                             reader.GetString(1),
                             reader.GetString(2),
                             reader.GetString(3),
@@ -108,7 +121,7 @@ namespace User_Administration_Api.Repository
             return user;
         }
 
-        public async Task<UserModelDTO> FindByName(string name)
+        public async Task<UserModelDto> FindByName(string name)
         {
             await using var connection = new SqlConnection(_connectionString);
             string sql = "SELECT * FROM Tb_User WHERE Name like '%'+@name+'%'";
@@ -118,10 +131,11 @@ namespace User_Administration_Api.Repository
 
             connection.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-            UserModelDTO user = null;
+            UserModelDto user = null;
             while (reader.Read())
             {
-                user = new UserModelDTO(
+                user = new UserModelDto(
+                            reader.GetInt32(0),
                             reader.GetString(1),
                             reader.GetString(2),
                             reader.GetString(3),
@@ -131,9 +145,26 @@ namespace User_Administration_Api.Repository
             return user;
         }
 
-        public Task<bool> UpdateUser(UsersModel user)
+        public async Task<bool> UpdateUser(UserModelDto user)
         {
-            throw new NotImplementedException();
+            await using var connection = new SqlConnection(_connectionString);
+            string sql = "UPDATE Tb_User" +
+                        " SET Name = @name," +
+                            " Email = @email," +
+                            " NickName = @nickName," +
+                            " DateBirth = @dateBirth" +
+                        " WHERE Id = @id;";
+            var cmd = new SqlCommand(@sql, connection);
+            cmd.Parameters.AddWithValue("@id", user.Id);
+            cmd.Parameters.AddWithValue("@name", user.Name);
+            cmd.Parameters.AddWithValue("@email", user.Email);
+            cmd.Parameters.AddWithValue("@nickName", user.NickName);
+            cmd.Parameters.AddWithValue("@dateBirth", user.DateBirth);
+
+            connection.Open();
+            var rowAffected = cmd.ExecuteNonQuery();
+
+            return rowAffected > 0;
         }
     }
 }

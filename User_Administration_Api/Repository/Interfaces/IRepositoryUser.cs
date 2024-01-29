@@ -5,12 +5,12 @@ namespace User_Administration_Api.Repository.Interfaces
 {
     public interface IRepositoryUser
     {
-        Task<IEnumerable<UserModelDTO>> FindAll();
-        Task<UserModelDTO> FindById(int id);
-        Task<UserModelDTO> FindByName(string name);
-        Task<UserModelDTO> FindByEmail(string email);
-        Task<bool> CreateNewUser(UsersModel user);
-        Task<bool> UpdateUser(UsersModel user);
+        Task<IEnumerable<UserModelDto>> FindAll();
+        Task<UserModelDto> FindById(int id);
+        Task<UserModelDto> FindByName(string name);
+        Task<UserModelDto> FindByEmail(string email);
+        Task<bool> CreateNewUser(UserModel user);
+        Task<bool> UpdateUser(UserModelDto user);
         Task<bool> DeleteUser(int id);
 
     }

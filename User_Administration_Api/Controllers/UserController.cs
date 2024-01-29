@@ -16,7 +16,7 @@ namespace User_Administration_Api.Controllers
         {
             _repository = repository;
         }
-
+        
         [HttpGet]
         [Route("findAll")]
         public async Task<IActionResult> GetAllUsers()
@@ -95,7 +95,7 @@ namespace User_Administration_Api.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> PostNewUser([FromBody] UsersModel user)
+        public async Task<IActionResult> PostNewUser([FromBody] UserModel user)
         {
             try
             {
@@ -104,7 +104,48 @@ namespace User_Administration_Api.Controllers
                 if (!userCreated)
                     return BadRequest();
 
-                return Ok(new UserModelDTO(user.Name, user.Email, user.Nickname, user.DateBirth));
+                return Created();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> UpdateUser(UserModelDto user)
+        {
+            try
+            {
+                var searchUser = await _repository.FindById(user.Id);
+                if (searchUser == null)
+                    return BadRequest("Usuário não encontrado na base.");
+
+                var userUpdated = await _repository.UpdateUser(user);
+
+                if (!userUpdated)
+                    return BadRequest();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var userDeleted = await _repository.DeleteUser(id);
+
+                if (!userDeleted)
+                    return BadRequest();
+                return NoContent();
             }
             catch (Exception ex)
             {
